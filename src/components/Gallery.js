@@ -123,52 +123,97 @@ const Gallery = () => {
               </div>
             ) : (
               <>
-                <div class="row">
+                <div class="row" style={{ margin: "0 -15px" }}>
                   {getImagesByCategory().map((image, index) => {
-                    const popupId = `gal-${
-                      image._id || image.id
-                    }-${activeCategory}`;
                     return (
                       <div
                         key={`${image._id || image.id}-${index}`}
-                        class="col-md-4 col-sm-6 gal-img"
+                        class="col-lg-4 col-md-4 col-sm-6 col-12 gal-img"
+                        style={{
+                          padding: "0 15px",
+                          marginBottom: "30px",
+                        }}
                       >
-                        <a href={`#${popupId}`}>
+                        <div
+                          className="gallery-image-container"
+                          style={{
+                            width: "100%",
+                            aspectRatio: "3/4",
+                            minHeight: "400px",
+                            maxHeight: "500px",
+                            overflow: "hidden",
+                            borderRadius: "12px",
+                            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                            transition:
+                              "transform 0.3s ease, box-shadow 0.3s ease",
+                            cursor: "default",
+                            position: "relative",
+                            backgroundColor: "#f5f5f5",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                              "translateY(-8px) scale(1.02)";
+                            e.currentTarget.style.boxShadow =
+                              "0 8px 20px rgba(0,0,0,0.2)";
+                            const overlay =
+                              e.currentTarget.querySelector(".image-overlay");
+                            if (overlay) overlay.style.opacity = "1";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform =
+                              "translateY(0) scale(1)";
+                            e.currentTarget.style.boxShadow =
+                              "0 4px 12px rgba(0,0,0,0.15)";
+                            const overlay =
+                              e.currentTarget.querySelector(".image-overlay");
+                            if (overlay) overlay.style.opacity = "0";
+                          }}
+                        >
                           <img
                             src={image.image}
                             alt={image.alt || "Gallery image"}
-                            class="img-fluid mt-4"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              objectPosition: "center",
+                              display: "block",
+                            }}
+                            loading="lazy"
                           />
-                        </a>
+                          {image.alt && (
+                            <div
+                              className="image-overlay"
+                              style={{
+                                position: "absolute",
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                background:
+                                  "linear-gradient(to top, rgba(0,0,0,0.7), transparent)",
+                                padding: "15px",
+                                opacity: 0,
+                                transition: "opacity 0.3s ease",
+                                pointerEvents: "none",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  color: "#fff",
+                                  fontSize: "14px",
+                                  fontWeight: "500",
+                                  textShadow: "0 2px 4px rgba(0,0,0,0.5)",
+                                }}
+                              >
+                                {image.alt}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     );
                   })}
                 </div>
-
-                {/* Popup Effects */}
-                {getImagesByCategory().map((image, index) => {
-                  const popupId = `gal-${
-                    image._id || image.id
-                  }-${activeCategory}`;
-                  return (
-                    <div
-                      key={`popup-${image._id || image.id}-${index}`}
-                      id={popupId}
-                      class="popup-effect"
-                    >
-                      <div class="popup">
-                        <img
-                          src={image.image}
-                          alt={image.alt || "Popup image"}
-                          class="img-fluid mt-4"
-                        />
-                        <a class="close" href="#gallery">
-                          &times;
-                        </a>
-                      </div>
-                    </div>
-                  );
-                })}
               </>
             )}
           </div>

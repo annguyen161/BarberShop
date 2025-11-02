@@ -17,6 +17,7 @@ const priceRoutes = require("./routes/priceRoutes");
 const testimonialRoutes = require("./routes/testimonialRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const bannerRoutes = require("./routes/bannerRoutes");
+const galleryRoutes = require("./routes/galleryRoutes");
 
 // Khởi tạo Express app
 const app = express();
@@ -75,6 +76,7 @@ app.use("/api/prices", priceRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/banners", bannerRoutes);
+app.use("/api/galleries", galleryRoutes);
 
 // Health check route
 app.get("/api/health", (req, res) => {
@@ -113,6 +115,7 @@ app.use("/api/*", (req, res) => {
       "/api/testimonials",
       "/api/contacts",
       "/api/banners",
+      "/api/galleries",
     ],
   });
 });

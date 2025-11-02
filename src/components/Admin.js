@@ -11,6 +11,7 @@ import ServicesManagement from "./admin/ServicesManagement";
 import PricesManagement from "./admin/PricesManagement";
 import TestimonialsManagement from "./admin/TestimonialsManagement";
 import ContactsManagement from "./admin/ContactsManagement";
+import GalleryManagement from "./admin/GalleryManagement";
 import "./admin/AdminStyles.css";
 
 const Admin = () => {
@@ -59,6 +60,8 @@ const Admin = () => {
         return <TestimonialsManagement />;
       case "contacts":
         return <ContactsManagement />;
+      case "gallery":
+        return <GalleryManagement />;
       default:
         return <AdminDashboard />;
     }
@@ -145,6 +148,16 @@ const Admin = () => {
             >
               <i className="fa fa-envelope"></i>
               <span>Tin Nhắn</span>
+            </button>
+
+            <button
+              className={`admin-nav-item ${
+                activeTab === "gallery" ? "active" : ""
+              }`}
+              onClick={() => setActiveTab("gallery")}
+            >
+              <i className="fa fa-images"></i>
+              <span>Gallery</span>
             </button>
           </nav>
         </div>

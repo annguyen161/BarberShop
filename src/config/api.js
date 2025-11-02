@@ -82,6 +82,12 @@ export const API_ENDPOINTS = {
   CONTACT_BY_ID: (id) => `/contacts/${id}`,
   NEWSLETTER: "/contacts/newsletter",
 
+  // Gallery
+  GALLERIES: "/galleries",
+  GALLERIES_BY_CATEGORY: (category) => `/galleries/category/${category}`,
+  GALLERY_BY_ID: (id) => `/galleries/${id}`,
+  UPLOAD_GALLERY_IMAGE: "/galleries/upload",
+
   // Health
   HEALTH: "/health",
 };

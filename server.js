@@ -87,6 +87,20 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+const path = require("path");
+
+// Serve frontend build nếu có
+app.use(express.static(path.join(__dirname, "build")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
+// Nếu dùng React Router frontend, thêm:
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
+
 // Catch-all route for undefined API endpoints
 app.use("/api/*", (req, res) => {
   res.status(404).json({

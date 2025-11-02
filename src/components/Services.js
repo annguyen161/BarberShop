@@ -63,66 +63,6 @@ const Services = () => {
           </div>
         </div>
       </section>
-
-      <section class="testimonials py-5" id="testimonials">
-        <div class="container py-md-5">
-          <h3 class="heading text-center mb-3 mb-sm-5">
-            Đánh giá của khách hàng
-          </h3>
-          <div class="row mt-3">
-            <div class="col-md-4 test-grid text-left px-lg-3">
-              <div class="test-info">
-                <p>
-                  Dịch vụ cắt tóc ở đây thật tuyệt vời! Thợ cắt tóc rất chuyên
-                  nghiệp và tận tâm. Tôi rất hài lòng với kết quả.
-                </p>
-                <h3 class="mt-md-4 mt-3"> Chương Minh</h3>
-
-                <div class="test-img text-center mb-3">
-                  <img
-                    src="assets/images/test1.jpg"
-                    class="img-fluid"
-                    alt="user-image"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 test-grid text-left px-lg-3 py-sm-5 py-md-0 py-3">
-              <div class="test-info">
-                <p>
-                  Salon này có không gian rất đẹp và thoải mái. Nhân viên phục
-                  vụ rất nhiệt tình và chuyên nghiệp.
-                </p>
-                <h3 class="mt-md-4 mt-3"> Văn Đức</h3>
-                <div class="test-img text-center mb-3">
-                  <img
-                    src="assets/images/test2.jpg"
-                    class="img-fluid"
-                    alt="user-image"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-md-4 test-grid text-left px-lg-3">
-              <div class="test-info">
-                <p>
-                  Kiểu tóc mà tôi được cắt ở đây thật hoàn hảo! Tôi sẽ quay lại
-                  lần nữa và giới thiệu cho bạn bè.
-                </p>
-                <h3 class="mt-md-4 mt-3">Thắng Nguyễn</h3>
-
-                <div class="test-img text-center mb-3">
-                  <img
-                    src="assets/images/test3.jpg"
-                    class="img-fluid"
-                    alt="user-image"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

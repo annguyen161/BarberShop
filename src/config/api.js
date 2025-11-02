@@ -60,6 +60,7 @@ export const API_ENDPOINTS = {
   SERVICES: "/services",
   SERVICE_BY_ID: (id) => `/services/${id}`,
   SEARCH_SERVICES: (keyword) => `/services/search/${keyword}`,
+  UPLOAD_SERVICE_IMAGE: "/services/upload",
 
   // Prices
   PRICES: "/prices",
@@ -70,6 +71,7 @@ export const API_ENDPOINTS = {
   TESTIMONIALS: "/testimonials",
   TESTIMONIALS_BY_PAGE: (page) => `/testimonials/page/${page}`,
   TESTIMONIAL_BY_ID: (id) => `/testimonials/${id}`,
+  UPLOAD_TESTIMONIAL_IMAGE: "/testimonials/upload",
 
   // Banners
   BANNERS: "/banners",

@@ -97,6 +97,25 @@ class TestimonialController {
       throw error;
     }
   }
+
+  // Upload file ảnh
+  async uploadImage(file) {
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await api.post(API_ENDPOINTS.UPLOAD_TESTIMONIAL_IMAGE, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      // API interceptor đã extract response.data, nên response ở đây là response.data từ server
+      return response.data.url;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance

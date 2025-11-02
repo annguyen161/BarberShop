@@ -18,6 +18,8 @@ const ServicesManagement = () => {
     category: "other",
     price: "",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
@@ -61,6 +63,7 @@ const ServicesManagement = () => {
         price: "",
       });
     }
+    setSelectedFile(null);
     setShowModal(true);
   };
 
@@ -77,11 +80,41 @@ const ServicesManagement = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Tạo preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Không set vào formData.image để giữ URL text input
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setUploading(true);
+
+      let imageUrl = formData.image;
+
+      // Nếu có file được chọn, upload file trước
+      if (selectedFile) {
+        try {
+          imageUrl = await ServiceController.uploadImage(selectedFile);
+          showMessage("success", "Upload ảnh thành công!");
+        } catch (error) {
+          showMessage("danger", "Lỗi khi upload ảnh. Vui lòng thử lại!");
+          setUploading(false);
+          return;
+        }
+      }
+
       const submitData = {
         ...formData,
+        image: imageUrl,
         price: formData.price ? Number(formData.price) : null,
       };
 
@@ -97,6 +130,8 @@ const ServicesManagement = () => {
       loadServices();
     } catch (error) {
       showMessage("danger", "Có lỗi xảy ra. Vui lòng thử lại!");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -239,15 +274,71 @@ const ServicesManagement = () => {
               </div>
 
               <div className="form-group">
-                <label>URL Hình Ảnh *</label>
+                <label>Hình Ảnh *</label>
+                <div style={{ marginBottom: "10px" }}>
+                  <label
+                    htmlFor="file-upload"
+                    className="btn btn-secondary"
+                    style={{
+                      display: "inline-block",
+                      marginBottom: "10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="fa fa-upload"></i> Chọn File
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                  {selectedFile && (
+                    <span style={{ marginLeft: "10px", color: "#28a745" }}>
+                      <i className="fa fa-check"></i> {selectedFile.name}
+                    </span>
+                  )}
+                </div>
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    padding: "10px",
+                    backgroundColor: "#f8f9fa",
+                    borderRadius: "4px",
+                    textAlign: "center",
+                    fontSize: "12px",
+                    color: "#6c757d",
+                  }}
+                >
+                  Hoặc
+                </div>
                 <input
                   type="text"
                   name="image"
                   value={formData.image}
                   onChange={handleChange}
-                  placeholder="assets/images/service.jpg"
-                  required
+                  placeholder="Nhập URL hình ảnh (ví dụ: /uploads/image.jpg hoặc assets/images/service.jpg)"
+                  required={!selectedFile}
                 />
+                {(formData.image || selectedFile) && (
+                  <div style={{ marginTop: "10px" }}>
+                    <img
+                      src={
+                        selectedFile
+                          ? URL.createObjectURL(selectedFile)
+                          : formData.image
+                      }
+                      alt="Preview"
+                      style={{
+                        maxWidth: "200px",
+                        maxHeight: "200px",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
@@ -284,8 +375,26 @@ const ServicesManagement = () => {
                 >
                   Hủy
                 </button>
-                <button type="submit" className="btn btn-primary">
-                  {editingService ? "Cập Nhật" : "Thêm Mới"}
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                        style={{ marginRight: "5px" }}
+                      ></span>
+                      Đang xử lý...
+                    </>
+                  ) : editingService ? (
+                    "Cập Nhật"
+                  ) : (
+                    "Thêm Mới"
+                  )}
                 </button>
               </div>
             </form>

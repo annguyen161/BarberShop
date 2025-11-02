@@ -63,18 +63,35 @@ const TestimonialsList = () => {
           {testimonials.map((testimonial, index) => (
             <div
               key={testimonial._id}
-              className="col-md-4 test-grid text-left px-lg-3"
+              className="col-md-4 test-grid text-left px-lg-3 mb-4"
             >
-              <div className="test-info">
-                <p>{testimonial.comment}</p>
-                <h3 className="mt-md-4 mt-3">{testimonial.name}</h3>
-
-                <div className="test-img text-center mb-3">
-                  <img
-                    src={testimonial.image}
-                    className="img-fluid"
-                    alt="user-image"
-                  />
+              <div className="test-info h-100 d-flex flex-column">
+                <p className="flex-grow-1 mb-3">{testimonial.comment}</p>
+                <div className="mt-auto">
+                  <h3
+                    className="mb-3"
+                    style={{
+                      minHeight: "48px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {testimonial.name}
+                  </h3>
+                  <div className="text-center">
+                    <img
+                      src={testimonial.image}
+                      className="img-fluid"
+                      alt="user-image"
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover",
+                        borderRadius: "50%",
+                        display: "inline-block",
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

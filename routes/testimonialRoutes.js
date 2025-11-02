@@ -5,7 +5,77 @@
 
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 const Testimonial = require("../models/Testimonial");
+
+// Cấu hình multer để lưu file
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = path.join(__dirname, "..", "uploads");
+    // Tạo thư mục nếu chưa tồn tại
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    // Tạo tên file unique: timestamp + original name
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    const name = path.basename(file.originalname, ext);
+    cb(null, `${name}-${uniqueSuffix}${ext}`);
+  },
+});
+
+// Filter để chỉ chấp nhận file ảnh
+const fileFilter = (req, file, cb) => {
+  const allowedTypes = /jpeg|jpg|png|gif|webp/;
+  const mimetype = file.mimetype.match(allowedTypes);
+  const extname = path.extname(file.originalname).toLowerCase().match(allowedTypes);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  }
+  cb(new Error("Chỉ chấp nhận file ảnh (jpeg, jpg, png, gif, webp)"));
+};
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: fileFilter,
+});
+
+// POST: Upload file ảnh
+router.post("/upload", upload.single("image"), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Không có file được upload",
+      });
+    }
+
+    // Trả về URL của file đã upload
+    const fileUrl = `/uploads/${req.file.filename}`;
+
+    res.json({
+      success: true,
+      message: "Upload file thành công",
+      data: {
+        url: fileUrl,
+        filename: req.file.filename,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi upload file",
+      error: error.message,
+    });
+  }
+});
 
 // GET: Lấy tất cả đánh giá
 router.get("/", async (req, res) => {

@@ -1,9 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PriceList from "./PriceList";
 import TestimonialsList from "./TestimonialsList";
+import ServiceController from "../controllers/ServiceController";
 
 const Home = () => {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  const loadServices = async () => {
+    try {
+      setLoading(true);
+      const response = await ServiceController.getAllServices();
+      // Xử lý cả 2 trường hợp: response.data hoặc response trực tiếp là array
+      const servicesData = response?.data || response || [];
+      setServices(Array.isArray(servicesData) ? servicesData : []);
+    } catch (error) {
+      console.error("Error loading services:", error);
+      setServices([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lấy 2 service đầu tiên cho hàng lớn
+  const firstTwoServices = services.slice(0, 2);
+  // Lấy 4 service tiếp theo cho hàng nhỏ
+  const nextFourServices = services.slice(2, 6);
+
   return (
     <div>
       //{" "}
@@ -152,116 +180,158 @@ const Home = () => {
       <section class="services py-5" id="services">
         <div class="container py-md-5">
           <h3 class="heading text-center mb-3 mb-sm-5">Dịch vụ</h3>
-          <div class="row ab-info">
-            <div class="col-md-6 ab-content ab-content1">
-              <div class="ab-content-inner">
-                <Link to="/single">
-                  <img
-                    src="assets/images/services2.jpg"
-                    alt="news image"
-                    class="img-fluid"
-                  />
-                </Link>
-                <div class="ab-info-con">
-                  <h4> Cắt tóc</h4>
-                  <Link
-                    to="/single"
-                    class="read-more two btn m-0 px-3"
-                    role="button"
-                  >
-                    <span class="fa fa-arrow-circle-o-right"> </span>
-                  </Link>
-                </div>
+          {loading ? (
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
               </div>
+              <p class="mt-3">Đang tải dịch vụ...</p>
             </div>
-            <div class="col-md-6 ab-content ab-content1">
-              <div class="ab-content-inner">
-                <Link to="/single">
-                  <img
-                    src="assets/images/services1.jpg"
-                    alt="news image"
-                    class="img-fluid"
-                  />
-                </Link>
-                <div class="ab-info-con">
-                  <h4>Cạo râu</h4>
-                  <a href="single.html" class="read-more two btn m-0 px-3">
-                    <span class="fa fa-arrow-circle-o-right"> </span>
-                  </a>
+          ) : services.length === 0 ? (
+            <div class="text-center py-5">
+              <p>Chưa có dịch vụ nào</p>
+            </div>
+          ) : (
+            <>
+              {/* Hàng lớn - 2 dịch vụ đầu tiên */}
+              {firstTwoServices.length > 0 && (
+                <div class="row ab-info">
+                  {firstTwoServices.map((service) => (
+                    <div
+                      key={service._id}
+                      class="col-md-6 ab-content ab-content1"
+                      style={{
+                        display: "flex",
+                        marginBottom: "1.5rem",
+                      }}
+                    >
+                      <div
+                        class="ab-content-inner"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginBottom: "1em",
+                            overflow: "hidden",
+                            height: "250px",
+                          }}
+                        >
+                          <img
+                            src={service.image || "assets/images/services2.jpg"}
+                            alt={service.name}
+                            class="img-fluid"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                            onError={(e) => {
+                              e.target.src = "assets/images/services2.jpg";
+                            }}
+                          />
+                        </div>
+                        <div
+                          class="ab-info-con"
+                          style={{
+                            textAlign: "center",
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <h4 style={{ margin: "0.5em 0" }}>{service.name}</h4>
+                          <div
+                            class="read-more two btn m-0 px-3"
+                            style={{ alignSelf: "center", cursor: "default" }}
+                          >
+                            <span class="fa fa-arrow-circle-o-right"> </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="row ab-info second mt-lg-4">
-            <div class="col-md-3 ab-content">
-              <div class="ab-content-inner">
-                <Link to="/single">
-                  <img
-                    src="assets/images/ser3.jpg"
-                    alt="news image"
-                    class="img-fluid"
-                  />
-                </Link>
-                <div class="ab-info-con">
-                  <h4>Nhuộm tóc</h4>
-                  <a href="single.html" class="read-more two btn m-0 px-3">
-                    <span class="fa fa-arrow-circle-o-right"> </span>
-                  </a>
+              )}
+
+              {/* Hàng nhỏ - 4 dịch vụ tiếp theo */}
+              {nextFourServices.length > 0 && (
+                <div class="row ab-info second mt-lg-4">
+                  {nextFourServices.map((service) => (
+                    <div
+                      key={service._id}
+                      class="col-md-3 ab-content"
+                      style={{
+                        display: "flex",
+                        marginBottom: "1.5rem",
+                      }}
+                    >
+                      <div
+                        class="ab-content-inner"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            marginBottom: "1em",
+                            overflow: "hidden",
+                            height: "200px",
+                          }}
+                        >
+                          <img
+                            src={service.image || "assets/images/ser3.jpg"}
+                            alt={service.name}
+                            class="img-fluid"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                            onError={(e) => {
+                              e.target.src = "assets/images/ser3.jpg";
+                            }}
+                          />
+                        </div>
+                        <div
+                          class="ab-info-con"
+                          style={{
+                            textAlign: "center",
+                            flex: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <h4 style={{ margin: "0.5em 0" }}>{service.name}</h4>
+                          <div
+                            class="read-more two btn m-0 px-3"
+                            style={{ alignSelf: "center", cursor: "default" }}
+                          >
+                            <span class="fa fa-arrow-circle-o-right"> </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </div>
-            <div class="col-md-3 ab-content">
-              <div class="ab-content-inner">
-                <Link to="/single">
-                  <img
-                    src="assets/images/ser4.jpg"
-                    alt="news image"
-                    class="img-fluid"
-                  />
-                </Link>
-                <div class="ab-info-con">
-                  <h4>Gội đầu</h4>
-                  <a href="single.html" class="read-more two btn m-0 px-3">
-                    <span class="fa fa-arrow-circle-o-right"> </span>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 ab-content">
-              <div class="ab-content-inner">
-                <Link to="/single">
-                  <img
-                    src="assets/images/ser5.jpg"
-                    alt="news image"
-                    class="img-fluid"
-                  />
-                </Link>
-                <div class="ab-info-con">
-                  <h4>Sấy tóc</h4>
-                  <a href="single.html" class="read-more two btn m-0 px-3">
-                    <span class="fa fa-arrow-circle-o-right"> </span>
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 ab-content">
-              <div class="ab-content-inner">
-                <Link to="/single">
-                  <img
-                    src="assets/images/ser6.jpg"
-                    alt="news image"
-                    class="img-fluid"
-                  />
-                </Link>
-                <div class="ab-info-con">
-                  <h4>Uốn tóc</h4>
-                  <a href="single.html" class="read-more two btn m-0 px-3">
-                    <span class="fa fa-arrow-circle-o-right"> </span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
+              )}
+            </>
+          )}
         </div>
       </section>
       {/* // <!-- /services -->

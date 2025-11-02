@@ -18,6 +18,8 @@ const TestimonialsManagement = () => {
     rating: 5,
     page: "both",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
 
   useEffect(() => {
@@ -61,6 +63,7 @@ const TestimonialsManagement = () => {
         page: "both",
       });
     }
+    setSelectedFile(null);
     setShowModal(true);
   };
 
@@ -77,17 +80,51 @@ const TestimonialsManagement = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      // Tạo preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Không set vào formData.image để giữ URL text input
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setUploading(true);
+
+      let imageUrl = formData.image;
+
+      // Nếu có file được chọn, upload file trước
+      if (selectedFile) {
+        try {
+          imageUrl = await TestimonialController.uploadImage(selectedFile);
+          showMessage("success", "Upload ảnh thành công!");
+        } catch (error) {
+          showMessage("danger", "Lỗi khi upload ảnh. Vui lòng thử lại!");
+          setUploading(false);
+          return;
+        }
+      }
+
+      const submitData = {
+        ...formData,
+        image: imageUrl,
+      };
+
       if (editingTestimonial) {
         await TestimonialController.updateTestimonial(
           editingTestimonial._id,
-          formData
+          submitData
         );
         showMessage("success", "Cập nhật đánh giá thành công!");
       } else {
-        await TestimonialController.createTestimonial(formData);
+        await TestimonialController.createTestimonial(submitData);
         showMessage("success", "Thêm đánh giá mới thành công!");
       }
 
@@ -95,6 +132,8 @@ const TestimonialsManagement = () => {
       loadTestimonials();
     } catch (error) {
       showMessage("danger", "Có lỗi xảy ra. Vui lòng thử lại!");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -251,15 +290,71 @@ const TestimonialsManagement = () => {
               </div>
 
               <div className="form-group">
-                <label>URL Ảnh *</label>
+                <label>Ảnh *</label>
+                <div style={{ marginBottom: "10px" }}>
+                  <label
+                    htmlFor="testimonial-file-upload"
+                    className="btn btn-secondary"
+                    style={{
+                      display: "inline-block",
+                      marginBottom: "10px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="fa fa-upload"></i> Chọn File
+                  </label>
+                  <input
+                    id="testimonial-file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: "none" }}
+                  />
+                  {selectedFile && (
+                    <span style={{ marginLeft: "10px", color: "#28a745" }}>
+                      <i className="fa fa-check"></i> {selectedFile.name}
+                    </span>
+                  )}
+                </div>
+                <div
+                  style={{
+                    marginBottom: "10px",
+                    padding: "10px",
+                    backgroundColor: "#f8f9fa",
+                    borderRadius: "4px",
+                    textAlign: "center",
+                    fontSize: "12px",
+                    color: "#6c757d",
+                  }}
+                >
+                  Hoặc
+                </div>
                 <input
                   type="text"
                   name="image"
                   value={formData.image}
                   onChange={handleChange}
-                  placeholder="assets/images/test1.jpg"
-                  required
+                  placeholder="Nhập URL hình ảnh (ví dụ: /uploads/image.jpg hoặc assets/images/test1.jpg)"
+                  required={!selectedFile}
                 />
+                {(formData.image || selectedFile) && (
+                  <div style={{ marginTop: "10px" }}>
+                    <img
+                      src={
+                        selectedFile
+                          ? URL.createObjectURL(selectedFile)
+                          : formData.image
+                      }
+                      alt="Preview"
+                      style={{
+                        maxWidth: "200px",
+                        maxHeight: "200px",
+                        border: "1px solid #ddd",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="form-group">
@@ -300,8 +395,26 @@ const TestimonialsManagement = () => {
                 >
                   Hủy
                 </button>
-                <button type="submit" className="btn btn-primary">
-                  {editingTestimonial ? "Cập Nhật" : "Thêm Mới"}
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <>
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                        style={{ marginRight: "5px" }}
+                      ></span>
+                      Đang xử lý...
+                    </>
+                  ) : editingTestimonial ? (
+                    "Cập Nhật"
+                  ) : (
+                    "Thêm Mới"
+                  )}
                 </button>
               </div>
             </form>
